@@ -1,25 +1,34 @@
-import { Component, OnInit } from '@angular/core';
-import { tattoos } from 'src/app/_data/tattoos';
+import { Component } from "@angular/core";
 
+import { reference } from "../../data/reference";
+import { tattoos } from "../../data/tattoos";
+
+/**
+ *
+ */
 @Component({
-  selector: 'app-reference',
-  templateUrl: './reference.component.html',
-  styleUrls: ['./reference.component.css'],
+  selector: "app-reference",
+  templateUrl: "./reference.component.html",
+  styleUrls: ["./reference.component.css"]
 })
-export class ReferenceComponent implements OnInit {
-  public view = '';
+export class ReferenceComponent {
+  public view = "";
   public tattooData = tattoos;
+  public refData = reference;
   public currentTattooIndex = 0;
 
-  constructor() {}
-
-  ngOnInit(): void {}
-
+  /**
+   *
+   * @param {string} name The view to switch to.
+   */
   changeView(name: string) {
     this.view = name;
     window.scrollTo({ top: 0 });
   }
 
+  /**
+   *
+   */
   nextTattoo() {
     this.currentTattooIndex =
       this.currentTattooIndex === this.tattooData.length - 1
@@ -27,6 +36,9 @@ export class ReferenceComponent implements OnInit {
         : this.currentTattooIndex + 1;
   }
 
+  /**
+   *
+   */
   previousTattoo() {
     this.currentTattooIndex =
       this.currentTattooIndex === 0
@@ -34,6 +46,10 @@ export class ReferenceComponent implements OnInit {
         : this.currentTattooIndex - 1;
   }
 
+  /**
+   *
+   * @param {string} index The index from the select menu.
+   */
   selectTattoo(index: string) {
     this.currentTattooIndex = parseInt(index);
   }

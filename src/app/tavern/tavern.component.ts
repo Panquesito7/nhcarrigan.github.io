@@ -1,17 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from "@angular/core";
 
+/**
+ *
+ */
 @Component({
-  selector: 'app-tavern',
-  templateUrl: './tavern.component.html',
-  styleUrls: ['./tavern.component.css'],
+  selector: "app-tavern",
+  templateUrl: "./tavern.component.html"
 })
-export class TavernComponent implements OnInit {
-  public view = 'intro';
+export class TavernComponent {
+  public view = "intro";
 
-  constructor() {}
-
-  ngOnInit(): void {}
-
+  /**
+   *
+   * @param {string} name The name of the view to switch to.
+   */
   changeView(name: string) {
     this.view = name;
     window.scrollTo({ top: 0 });

@@ -1,15 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from "@angular/core";
 
+/**
+ *
+ */
 @Component({
-  selector: 'app-plaza',
-  templateUrl: './plaza.component.html',
-  styleUrls: ['./plaza.component.css']
+  selector: "app-plaza",
+  templateUrl: "./plaza.component.html"
 })
-export class PlazaComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
-}
+export class PlazaComponent {}

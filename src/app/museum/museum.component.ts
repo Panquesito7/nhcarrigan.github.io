@@ -1,97 +1,120 @@
-import { Component, OnInit } from '@angular/core';
-import { emotes } from 'src/app/_data/emotes';
-import { portraits } from 'src/app/_data/portraits';
-import { Emote } from 'src/interfaces/Emote';
-import { Portrait } from 'src/interfaces/Portrait';
-import { Poses } from '../_data/poses';
+import { Component } from "@angular/core";
 
-type viewType = 'intro' | 'portrait' | 'emote' | 'pose';
+import { Emote } from "../../interfaces/Emote";
+import { Portrait } from "../../interfaces/Portrait";
+import { Pose } from "../../interfaces/Pose";
+import { AssetsService } from "../assets.service";
 
+type viewType = "intro" | "portrait" | "emote" | "pose";
+type assetViewType = Exclude<viewType, "intro">;
+type titledAsset = "Portrait" | "Emote" | "Pose";
+type pluralAsset = "portraits" | "emotes" | "poses";
+
+const titleView: {
+  [key in assetViewType]: titledAsset;
+} = {
+  portrait: "Portrait",
+  emote: "Emote",
+  pose: "Pose"
+};
+
+const pluralView: {
+  [key in assetViewType]: pluralAsset;
+} = {
+  portrait: "portraits",
+  emote: "emotes",
+  pose: "poses"
+};
+
+/**
+ *
+ */
 @Component({
-  selector: 'app-museum',
-  templateUrl: './museum.component.html',
-  styleUrls: ['./museum.component.css'],
+  selector: "app-museum",
+  templateUrl: "./museum.component.html",
+  styleUrls: ["./museum.component.css"]
 })
-export class MuseumComponent implements OnInit {
-  public view: viewType = 'intro';
+export class MuseumComponent {
+  public view: viewType = "intro";
   public portraits: Portrait[] = [];
   public emotes: Emote[] = [];
-  public poses: string[] = [];
+  public poses: Pose[] = [];
   public currentPortraitIndex = 0;
   public currentEmoteIndex = 0;
   public currentPoseIndex = 0;
 
-  constructor() {}
-
-  ngOnInit(): void {
-    this.portraits = portraits;
-    this.emotes = emotes;
-    this.poses = Poses;
+  /**
+   *
+   * @param {AssetsService} assetService The instance of the Assets service.
+   */
+  constructor(private assetService: AssetsService) {
+    this.assetService.fetchPortraits().subscribe((portraits) => {
+      this.portraits = portraits.sort((a, b) => a.name.localeCompare(b.name));
+      this.currentPortraitIndex = Math.floor(Math.random() * portraits.length);
+    });
+    this.assetService.fetchEmotes().subscribe((emotes) => {
+      this.emotes = emotes.sort((a, b) => a.name.localeCompare(b.name));
+      this.currentEmoteIndex = Math.floor(Math.random() * emotes.length);
+    });
+    this.assetService.fetchPoses().subscribe((poses) => {
+      this.poses = poses.sort((a, b) => a.name.localeCompare(b.name));
+      this.currentPoseIndex = Math.floor(Math.random() * poses.length);
+    });
   }
 
+  /**
+   *
+   * @param {viewType} name The type of view to load.
+   */
   changeView(name: viewType) {
     this.view = name;
     window.scrollTo({ top: 0 });
   }
 
-  nextPortrait() {
-    this.currentPortraitIndex =
-      this.currentPortraitIndex === this.portraits.length - 1
+  /**
+   *
+   * @param {assetViewType} view The type of asset view to load.
+   */
+  nextAsset(view: assetViewType) {
+    const titledView = titleView[view];
+    const pluraledView = pluralView[view];
+    this[`current${titledView}Index`] =
+      this[pluraledView].length - 1 === this[`current${titledView}Index`]
         ? 0
-        : this.currentPortraitIndex + 1;
+        : this[`current${titledView}Index`] + 1;
   }
 
-  previousPortrait() {
-    this.currentPortraitIndex =
-      this.currentPortraitIndex === 0
-        ? this.portraits.length - 1
-        : this.currentPortraitIndex - 1;
+  /**
+   *
+   * @param {assetViewType} view The type of asset view to load.
+   */
+  previousAsset(view: assetViewType) {
+    const titledView = titleView[view];
+    const pluraledView = pluralView[view];
+    this[`current${titledView}Index`] =
+      this[`current${titledView}Index`] === 0
+        ? this[pluraledView].length - 1
+        : this[`current${titledView}Index`] - 1;
   }
 
-  selectPortrait(index: string) {
-    this.currentPortraitIndex = parseInt(index);
+  /**
+   *
+   * @param {assetViewType} view The type of asset view to load.
+   * @param {string} index The string from the select menu.
+   */
+  selectAsset(view: assetViewType, index: string) {
+    const titledView = titleView[view];
+    this[`current${titledView}Index`] = parseInt(index);
   }
 
-  nextEmote() {
-    this.currentEmoteIndex =
-      this.currentEmoteIndex === this.emotes.length - 1
-        ? 0
-        : this.currentEmoteIndex + 1;
-  }
-
-  previousEmote() {
-    this.currentEmoteIndex =
-      this.currentEmoteIndex === 0
-        ? this.emotes.length - 1
-        : this.currentEmoteIndex - 1;
-  }
-
-  selectEmote(index: string) {
-    this.currentEmoteIndex = parseInt(index);
-  }
-
-  nextPose() {
-    this.currentPoseIndex =
-      this.currentPoseIndex === this.poses.length - 1
-        ? 0
-        : this.currentPoseIndex + 1;
-  }
-
-  previousPose() {
-    this.currentPoseIndex =
-      this.currentPoseIndex === 0
-        ? this.poses.length - 1
-        : this.currentPoseIndex - 1;
-  }
-
-  selectPose(index: string) {
-    this.currentPoseIndex = parseInt(index);
-  }
-
-  getPoseName(fileName: string) {
-    const withoutExtension = fileName.split('.')[0];
-    const [name, number] = withoutExtension.split('-');
-    const titleCasedName = `${name[0].toUpperCase()}${name.slice(1)}`;
-    return number ? `${titleCasedName} ${number}` : titleCasedName;
+  /**
+   *
+   * @param {assetViewType} view The type of asset view to load.
+   */
+  randomAsset(view: assetViewType) {
+    const titledView = titleView[view];
+    this[`current${titledView}Index`] = Math.floor(
+      Math.random() * this[pluralView[view]].length
+    );
   }
 }
